@@ -1,0 +1,41 @@
+***** PHPMYADMIN CONFIG ON UBUNTU 20.04 (EC2) *****
+ssh -i 'key_name'.pem ubuntu@'host_ip'
+
+sudo su
+apt-get update
+apt-get dist-upgrade -y
+sudo add-apt-repository ppa:ondrej/php
+sudo add-apt-repository ppa:ondrej/apache2
+sudo apt-get update
+sudo apt-get install -y apache2 // when asked about server, PRESS SPACE to select apache2. Abort when mysql issue arises, we'll fix this later
+apt-get install  php7.4 php7.4-cli php7.4-fpm php7.4-gd php-ssh2 libapache2-mod-php7.4 php7.4-mcrypt mysql-server php7.4-mysql git unzip zip postfix php7.4-curl mailutils php7.4-json phpmyadmin -y
+mysql 
+CREATE USER 'username'@'localhost' IDENTIFIED BY 'the_password';
+GRANT ALL PRIVILEGES ON * . * TO 'username'@'localhost';
+FLUSH PRIVILEGES;
+SHOW GRANTS FOR 'username'@'ipaddress';
+quit
+phpenmod mcrypt
+phpenmod mbstring
+nano /etc/apache2/sites-enabled/000-default.conf
+--ADD LINE-- 
+Include /etc/phpmyadmin/apache.conf
+sudo systemctl restart apache2
+
+// Try going to 'host_ip_address'/phpmyadmin to test
+
+
+nano /etc/phpmyadmin/config.inc.php
+--ADD LINES BELOW THE PMA CONFIG AREA AND FILL IN DETAILS--
+$i++;
+$cfg['Servers'][$i]['host']          = '__FILL_IN_DETAILS__';
+$cfg['Servers'][$i]['port']          = '3306';
+$cfg['Servers'][$i]['socket']        = '';
+$cfg['Servers'][$i]['connect_type']  = 'tcp';
+$cfg['Servers'][$i]['extension']     = 'mysql';
+$cfg['Servers'][$i]['compress']      = FALSE;
+$cfg['Servers'][$i]['auth_type']     = 'config';
+$cfg['Servers'][$i]['user']          = '__FILL_IN_DETAILS__';
+$cfg['Servers'][$i]['password']      = '__FILL_IN_DETAILS__';
+
+wooo it should work!
